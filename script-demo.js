@@ -7,7 +7,7 @@
 //
 // TODO: подставить адрес своей Cloud Function после её создания.
 // ============================================================
-var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/ЗАМЕНИТЕ_НА_ID_ФУНКЦИИ';
+var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/d4ebphtbsdd9noj2va0s';
 
 // Зависшее соединение (мобильный интернет, оператор режет трафик) не должно
 // превращаться в бесконечно «думающую» страницу — рвём запрос сами.
