@@ -7,7 +7,7 @@
 //
 // TODO: подставить адрес своей Cloud Function после её создания.
 // ============================================================
-var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/d4ebphtbsdd9noj2va0s';
+var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/ЗАМЕНИТЕ_НА_ID_ФУНКЦИИ';
 
 // Зависшее соединение (мобильный интернет, оператор режет трафик) не должно
 // превращаться в бесконечно «думающую» страницу — рвём запрос сами.
@@ -502,6 +502,7 @@ function fetchAvailability(force) {
 }
 
 function dayData(masterId, dateIso) {
+  if (!AVAILABILITY) return { intervals: [], booked: [] };
   var forMaster = AVAILABILITY.availability[masterId];
   return (forMaster && forMaster[dateIso]) || { intervals: [], booked: [] };
 }
@@ -876,9 +877,17 @@ function renderMyBookings(bookings, phone) {
       + '<p class="mybooking-status" hidden></p>';
 
     var statusEl = card.querySelector('.mybooking-status');
+    var cancelBtn = card.querySelector('.btn-cancel');
+    var rescheduleBtn = card.querySelector('.btn-reschedule');
 
-    card.querySelector('.btn-cancel').addEventListener('click', function () {
+    cancelBtn.addEventListener('click', function () {
       if (!confirm('Отменить запись на ' + formatDateRu(b.date) + ', ' + b.start + '?')) return;
+
+      // Второй клик, пока первый запрос ещё в пути, отменял уже отменённую
+      // бронь: сервер отвечал 404, и поверх «Запись отменена» рисовалось
+      // «не получилось» — хотя всё прошло. Блокируем кнопки на время запроса.
+      cancelBtn.disabled = true;
+      rescheduleBtn.disabled = true;
 
       callBackend('cancelBookingByPhone', { phone: phone, id: b.id })
         .then(function (res) {
@@ -891,10 +900,18 @@ function renderMyBookings(bookings, phone) {
             setStatus(statusEl, 'Не получилось отменить. Попробуйте ещё раз.', 'error');
           }
         })
-        .catch(function () { setStatus(statusEl, 'Сервер не отвечает.', 'error'); });
+        .catch(function () { setStatus(statusEl, 'Сервер не отвечает.', 'error'); })
+        .finally(function () {
+          // После успешной отмены кнопки уже скрыты — разблокируем только
+          // если запись осталась на месте.
+          if (!card.classList.contains('is-cancelled')) {
+            cancelBtn.disabled = false;
+            rescheduleBtn.disabled = false;
+          }
+        });
     });
 
-    card.querySelector('.btn-reschedule').addEventListener('click', function () {
+    rescheduleBtn.addEventListener('click', function () {
       var panel = card.querySelector('.mybooking-reschedule-panel');
       if (!panel.hidden) { panel.hidden = true; return; }
       panel.hidden = false;
@@ -915,6 +932,17 @@ function setStatus(el, text, kind) {
 // брони исключаем из проверки занятости, иначе запись конфликтовала бы
 // сама с собой.
 function buildRescheduleSlots(panel, booking, phone, statusEl) {
+  // Отмена соседней брони сбрасывает кэш доступности — перед отрисовкой
+  // сетки убеждаемся, что данные на руках (и заодно берём свежие).
+  if (!AVAILABILITY) {
+    panel.innerHTML = '<p class="booking-step-placeholder">Загружаем расписание…</p>';
+    fetchAvailability(true).then(function () { renderRescheduleSlots(panel, booking, phone, statusEl); });
+    return;
+  }
+  renderRescheduleSlots(panel, booking, phone, statusEl);
+}
+
+function renderRescheduleSlots(panel, booking, phone, statusEl) {
   panel.innerHTML = '<p class="booking-step-hint">Новое время в пределах ' + escapeHtml(formatDateRu(booking.date)) + ':</p><div class="time-picker"></div>';
   var picker = panel.querySelector('.time-picker');
 
@@ -938,6 +966,12 @@ function buildRescheduleSlots(panel, booking, phone, statusEl) {
     if (!slot.free) { picker.appendChild(btn); return; }
 
     btn.addEventListener('click', function () {
+      // Та же защита, что и у отмены: пока запрос не вернулся, вся сетка
+      // заблокирована — иначе второй клик уводит бронь не туда, куда
+      // показал первый ответ.
+      var allSlots = picker.querySelectorAll('.time-slot');
+      allSlots.forEach(function (s) { s.disabled = true; });
+
       callBackend('rescheduleBookingByPhone', { phone: phone, id: booking.id, newStart: time })
         .then(function (res) {
           if (res && res.ok) {
@@ -946,11 +980,16 @@ function buildRescheduleSlots(panel, booking, phone, statusEl) {
             AVAILABILITY = null;
           } else if (res && res.error === 'slot-taken') {
             setStatus(statusEl, 'Это время уже заняли. Выберите другое.', 'error');
+            buildRescheduleSlots(panel, booking, phone, statusEl);
           } else {
             setStatus(statusEl, 'Не получилось перенести. Попробуйте ещё раз.', 'error');
+            buildRescheduleSlots(panel, booking, phone, statusEl);
           }
         })
-        .catch(function () { setStatus(statusEl, 'Сервер не отвечает.', 'error'); });
+        .catch(function () {
+          setStatus(statusEl, 'Сервер не отвечает.', 'error');
+          allSlots.forEach(function (s) { s.disabled = false; });
+        });
     });
 
     picker.appendChild(btn);

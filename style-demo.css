@@ -26,6 +26,11 @@
 
 * { box-sizing: border-box; }
 
+/* Атрибут hidden должен побеждать любые наши display: иначе элемент с
+   display: flex/grid остаётся видимым, хотя код его уже «спрятал»
+   (так не скрывались кнопки отменённой записи и блок результатов поиска). */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 body {

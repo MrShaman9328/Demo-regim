@@ -21,6 +21,12 @@
 
 * { box-sizing: border-box; }
 
+/* Атрибут hidden должен побеждать любые наши display. Без этого правила
+   элемент с display: flex/grid остаётся на экране, даже когда код его
+   «спрятал»: именно так экран входа не исчезал после успешного логина,
+   а панель просто дорисовывалась ниже. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font-family: var(--font-sans);

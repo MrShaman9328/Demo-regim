@@ -7,7 +7,7 @@
 //
 // TODO: подставить адрес своей Cloud Function после её создания.
 // ============================================================
-var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/d4ebphtbsdd9noj2va0s';
+var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/ЗАМЕНИТЕ_НА_ID_ФУНКЦИИ';
 
 var LOGIN_KEY = 'demo_admin_login';
 var PASSWORD_KEY = 'demo_admin_password';
