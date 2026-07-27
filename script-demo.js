@@ -5,9 +5,20 @@
 // всё приходит с бэкенда действием getConfig и рендерится здесь.
 // Чтобы развернуть салон, правится config.json в бакете, а не код.
 //
-// TODO: подставить адрес своей Cloud Function после её создания.
+// Адрес Cloud Function. При переносе движка на нового клиента меняется
+// здесь и в admin-demo.js — это единственные две строки в коде фронтенда,
+// которые зависят от конкретного развёртывания.
 // ============================================================
-var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/ЗАМЕНИТЕ_НА_ID_ФУНКЦИИ';
+var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/d4ebphtbsdd9noj2va0s';
+
+// Если адрес остался заглушкой, страница должна сказать об этом прямо:
+// иначе неверное развёртывание выглядит как «сервер не отвечает», хотя
+// сервер в полном порядке.
+function isBackendConfigured() {
+  return typeof CLOUD_FUNCTION_URL === 'string'
+    && CLOUD_FUNCTION_URL.length > 0
+    && CLOUD_FUNCTION_URL.indexOf('ЗАМЕНИТЕ') === -1;
+}
 
 // Зависшее соединение (мобильный интернет, оператор режет трафик) не должно
 // превращаться в бесконечно «думающую» страницу — рвём запрос сами.
@@ -129,6 +140,12 @@ function attachPhoneMask(input) {
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function () {
+  if (!isBackendConfigured()) {
+    console.error('Не задан адрес Cloud Function: проверьте backend-url.js (переменная CLOUD_FUNCTION_URL).');
+    showLoadError('Сайт не подключён к серверу записи: в backend-url.js не указан адрес Cloud Function.');
+    return;
+  }
+
   callBackend('getConfig')
     .then(function (res) {
       if (!res || !res.config) throw new Error('пустой конфиг');
@@ -137,12 +154,14 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(function (err) {
       console.error('Не удалось загрузить конфигурацию салона:', err);
-      var list = document.getElementById('services-list');
-      if (list) {
-        list.innerHTML = '<p class="loading-note">Не удалось загрузить данные салона. Обновите страницу или попробуйте позже.</p>';
-      }
+      showLoadError('Не удалось загрузить данные салона. Обновите страницу или попробуйте позже.');
     });
 });
+
+function showLoadError(text) {
+  var list = document.getElementById('services-list');
+  if (list) list.innerHTML = '<p class="loading-note">' + escapeHtml(text) + '</p>';
+}
 
 function applyConfig() {
   applyBrand();

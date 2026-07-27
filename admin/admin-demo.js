@@ -5,9 +5,15 @@
 // Пароль в браузере не хранится дольше сессии вкладки и никогда не
 // попадает в URL — он уходит только в теле POST-запроса.
 //
-// TODO: подставить адрес своей Cloud Function после её создания.
+// Адрес Cloud Function — тот же, что и в script-demo.js.
 // ============================================================
-var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/ЗАМЕНИТЕ_НА_ID_ФУНКЦИИ';
+var CLOUD_FUNCTION_URL = 'https://functions.yandexcloud.net/d4ebphtbsdd9noj2va0s';
+
+function isBackendConfigured() {
+  return typeof CLOUD_FUNCTION_URL === 'string'
+    && CLOUD_FUNCTION_URL.length > 0
+    && CLOUD_FUNCTION_URL.indexOf('ЗАМЕНИТЕ') === -1;
+}
 
 var LOGIN_KEY = 'demo_admin_login';
 var PASSWORD_KEY = 'demo_admin_password';
@@ -108,6 +114,12 @@ var loginInput = document.getElementById('admin-login-input');
 var passwordInput = document.getElementById('admin-password-input');
 
 document.addEventListener('DOMContentLoaded', function () {
+  if (!isBackendConfigured()) {
+    console.error('Не задан адрес Cloud Function: проверьте backend-url.js (переменная CLOUD_FUNCTION_URL).');
+    showLoginError('Панель не подключена к серверу: в backend-url.js не указан адрес Cloud Function.');
+    return;
+  }
+
   callPublic('getConfig', {})
     .then(function (res) {
       CONFIG = (res && res.config) || null;
