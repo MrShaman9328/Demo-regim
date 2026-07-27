@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Заголовок и весь контент подставляются из config.json при загрузке -->
+<title>Онлайн-запись</title>
+<meta name="description" content="Онлайн-запись без звонка и регистрации">
+<link rel="stylesheet" href="style-demo.css">
+</head>
+<body>
+
+<!-- Плашка демо-режима: показывается, только если бэкенд отдал demoMode -->
+<div class="demo-notice" id="demo-notice" hidden></div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="#top" class="brand" id="brand-name"></a>
+    <nav class="main-nav">
+      <a href="#uslugi">Услуги</a>
+      <a href="#o-salone">О салоне</a>
+      <button type="button" class="nav-link-btn" id="open-mybookings-modal">Мои записи</button>
+      <a href="#uslugi" class="btn btn-primary btn-small">Записаться</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="container">
+      <h1 id="hero-title"></h1>
+      <p class="hero-tagline" id="hero-tagline"></p>
+      <a href="#uslugi" class="btn btn-primary">Записаться онлайн</a>
+    </div>
+  </section>
+
+  <section class="about" id="o-salone">
+    <div class="container">
+      <p class="section-eyebrow">о нас</p>
+      <h2 id="about-title"></h2>
+      <p class="about-text" id="about-text"></p>
+      <ul class="about-facts" id="about-facts"></ul>
+    </div>
+  </section>
+
+  <section class="services" id="uslugi">
+    <div class="container">
+      <p class="section-eyebrow">каталог</p>
+      <h2>Услуги</h2>
+      <p class="services-hint" id="services-hint">Выберите услугу — можно несколько сразу.</p>
+      <p class="services-locked-note">Выбор зафиксирован для текущей записи. Чтобы изменить — вернитесь кнопкой «К услугам» на шаге записи.</p>
+      <div class="card-grid" id="services-list">
+        <p class="loading-note">Загружаем услуги…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Панель выбранных услуг, приклеена к низу экрана -->
+  <div class="booking-bar" id="booking-bar" hidden>
+    <div class="container booking-bar-inner">
+      <p class="booking-bar-summary" id="booking-bar-summary"></p>
+      <button type="button" class="btn btn-primary" id="booking-bar-next">Продолжить</button>
+    </div>
+  </div>
+
+  <section class="booking" id="zapis" hidden>
+    <div class="container">
+      <h2>Оформление записи</h2>
+
+      <ol class="booking-progress" id="booking-progress">
+        <li class="progress-step active">Мастер</li>
+        <li class="progress-step">Время</li>
+        <li class="progress-step">Контакты</li>
+        <li class="progress-step">Готово</li>
+      </ol>
+
+      <!-- Шаг 1: мастер -->
+      <div class="booking-step" data-step="1">
+        <p class="booking-step-title">Кто проведёт сеанс</p>
+        <p class="booking-step-hint">Показаны мастера, которые оказывают все выбранные услуги.</p>
+        <div class="master-picker" id="master-picker"></div>
+        <div class="booking-step-actions">
+          <button type="button" class="btn btn-ghost" data-back="0">← К услугам</button>
+        </div>
+      </div>
+
+      <!-- Шаг 2: дата и время -->
+      <div class="booking-step" data-step="2" hidden>
+        <p class="booking-step-title">Дата</p>
+        <div class="date-picker" id="date-picker"></div>
+
+        <p class="booking-step-title">Время</p>
+        <div class="time-picker" id="time-picker">
+          <p class="booking-step-placeholder">Сначала выберите дату выше.</p>
+        </div>
+
+        <div class="booking-step-actions">
+          <button type="button" class="btn btn-ghost" data-back="1">← Назад</button>
+          <button type="button" class="btn btn-primary" id="to-step-3" disabled>Далее</button>
+        </div>
+      </div>
+
+      <!-- Шаг 3: контакты -->
+      <div class="booking-step" data-step="3" hidden>
+        <p class="booking-step-title">Как с вами связаться</p>
+        <form id="booking-contact-form" autocomplete="on">
+          <label class="field">
+            <span>Имя</span>
+            <input type="text" name="name" id="client-name-input" required>
+          </label>
+          <label class="field">
+            <span>Телефон</span>
+            <input type="tel" name="phone" inputmode="tel" required>
+          </label>
+          <label class="field">
+            <span>Комментарий <em>(необязательно)</em></span>
+            <textarea name="comment" id="client-comment-input" rows="3"></textarea>
+          </label>
+
+          <fieldset class="choice-group">
+            <legend>Удобный способ связи</legend>
+            <div class="choice-chips" id="contact-methods"></div>
+          </fieldset>
+
+          <label class="checkbox-field">
+            <input type="checkbox" name="consent" required>
+            <span>Согласен на обработку персональных данных</span>
+          </label>
+
+          <p class="form-error" id="step3-error" hidden>Заполните имя, телефон, способ связи и подтвердите согласие.</p>
+        </form>
+
+        <div class="booking-step-actions">
+          <button type="button" class="btn btn-ghost" data-back="2">← Назад</button>
+          <button type="button" class="btn btn-primary" id="to-step-4">Далее</button>
+        </div>
+      </div>
+
+      <!-- Шаг 4: подтверждение -->
+      <div class="booking-step" data-step="4" hidden>
+        <p class="booking-step-title">Проверьте запись</p>
+        <div class="booking-summary" id="booking-final-summary"></div>
+        <div class="booking-step-actions">
+          <button type="button" class="btn btn-ghost" data-back="3">← Назад</button>
+          <button type="button" class="btn btn-primary" id="confirm-booking">Подтвердить запись</button>
+        </div>
+      </div>
+
+      <!-- Успех -->
+      <div class="booking-success" id="booking-success" hidden>
+        <p class="booking-success-title">Вы записаны</p>
+        <p id="booking-success-details"></p>
+        <p class="booking-success-note">Мы свяжемся с вами для подтверждения.</p>
+        <button type="button" class="btn btn-ghost" id="book-again-btn">Записаться ещё раз</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Демо-блоки: рендерятся только при demoMode -->
+  <section class="demo-cta" id="demo-cta" hidden></section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-title" id="footer-name"></p>
+    <div class="footer-info">
+      <p class="footer-line" id="footer-address"></p>
+      <a class="footer-line footer-link" id="footer-phone" href="#"></a>
+    </div>
+    <div class="footer-links" id="footer-socials"></div>
+  </div>
+</footer>
+
+<!-- Модалка «Мои записи» -->
+<dialog id="mybookings-modal" class="modal">
+  <button type="button" class="modal-close" id="close-mybookings-modal" aria-label="Закрыть">×</button>
+  <h2>Мои записи</h2>
+  <p class="modal-hint">Введите номер телефона, который указывали при записи.</p>
+
+  <label class="field">
+    <span>Телефон</span>
+    <input type="tel" id="mybookings-phone" inputmode="tel">
+  </label>
+
+  <!-- Ловушка для ботов: поле скрыто стилями, человек его не видит -->
+  <div class="hp-field" aria-hidden="true">
+    <label>Не заполняйте это поле<input type="text" id="mybookings-hp" tabindex="-1" autocomplete="off"></label>
+  </div>
+
+  <p class="form-error" id="mybookings-error" hidden></p>
+  <button type="button" class="btn btn-primary btn-block" id="mybookings-find-btn">Найти мои записи</button>
+
+  <div id="mybookings-results" class="mybookings-results" hidden></div>
+</dialog>
+
+<script src="script-demo.js"></script>
+</body>
+</html>

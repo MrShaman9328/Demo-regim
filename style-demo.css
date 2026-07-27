@@ -1,0 +1,496 @@
+/* ============================================================
+   Стили клиентской части.
+
+   Палитра — только CSS-переменные: их значения приходят из
+   config.json и проставляются скриптом на <html>. Значения ниже —
+   запасные, на случай если конфиг не загрузился.
+
+   Шрифты — системные. Никаких внешних CDN: часть шрифтовых
+   сервисов недоступна у российских операторов без VPN, и страница
+   тогда грузится рывками или не грузится вовсе.
+   ============================================================ */
+
+:root {
+  --accent: #5C8A4A;
+  --accent-dark: #3F6633;
+  --accent-tint: #EDF3E8;
+  --ink: #26302A;
+  --ink-soft: #61706A;
+  --bg: #FAFAF7;
+  --surface: #FFFFFF;
+  --border: #E3E6DF;
+  --radius: 14px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+  /* Место под нижнюю панель выбранных услуг */
+  padding-bottom: 80px;
+}
+
+h1, h2, h3 { line-height: 1.25; margin: 0 0 12px; }
+h1 { font-size: clamp(28px, 5vw, 44px); }
+h2 { font-size: clamp(22px, 3.5vw, 32px); }
+p { margin: 0 0 12px; }
+
+a { color: var(--accent-dark); }
+
+.container {
+  width: min(1080px, 100% - 32px);
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+/* ---------- Кнопки ---------- */
+
+.btn {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary:disabled { background: var(--border); color: var(--ink-soft); cursor: default; }
+
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--ink); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+.btn-small { padding: 8px 16px; font-size: 14px; }
+.btn-block { display: block; width: 100%; }
+
+/* ---------- Плашка демо-режима ---------- */
+
+.demo-notice {
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* ---------- Шапка ---------- */
+
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+/* Две липкие полосы подряд перекрывали бы друг друга — при демо-плашке
+   шапка перестаёт быть липкой. */
+body.has-demo-notice .site-header { position: static; }
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  flex-wrap: wrap;
+}
+
+.brand { font-weight: 700; font-size: 18px; text-decoration: none; color: var(--ink); }
+
+.main-nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.main-nav a { text-decoration: none; color: var(--ink); }
+.main-nav a:hover { color: var(--accent-dark); }
+
+.nav-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+.nav-link-btn:hover { color: var(--accent-dark); }
+
+/* ---------- Первый экран ---------- */
+
+.hero {
+  background: var(--accent-tint);
+  padding: clamp(48px, 8vw, 96px) 0;
+  text-align: center;
+}
+.hero-tagline { color: var(--ink-soft); font-size: 18px; margin-bottom: 24px; }
+
+/* ---------- О салоне ---------- */
+
+.about { padding: clamp(40px, 6vw, 72px) 0; }
+.about-text { max-width: 68ch; }
+
+.about-facts {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.about-facts li {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* ---------- Услуги ---------- */
+
+.services { padding: clamp(40px, 6vw, 72px) 0; }
+.services-hint { color: var(--ink-soft); }
+
+.services-locked-note {
+  display: none;
+  color: var(--accent-dark);
+  background: var(--accent-tint);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.services-locked .services-locked-note { display: block; }
+.services-locked .services-hint { display: none; }
+/* Каталог заморожен на время оформления записи: случайный клик иначе
+   разъедется с уже выбранными мастером и временем. */
+.services-locked .card-grid { opacity: .55; pointer-events: none; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+.service-card.picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+.service-name { font-weight: 600; margin-bottom: 6px; }
+.service-note { color: var(--ink-soft); font-size: 14px; flex: 1; }
+
+.service-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.service-meta { font-size: 14px; color: var(--ink-soft); }
+
+.service-pick {
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.service-pick:hover { border-color: var(--accent); color: var(--accent-dark); }
+.service-card.picked .service-pick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.loading-note { color: var(--ink-soft); }
+
+/* ---------- Нижняя панель выбора ---------- */
+
+.booking-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 0;
+  z-index: 25;
+}
+.booking-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.booking-bar-summary { margin: 0; font-weight: 600; }
+
+/* ---------- Шаги записи ---------- */
+
+.booking { padding: clamp(40px, 6vw, 72px) 0; background: var(--surface); }
+
+.booking-progress {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 28px;
+  counter-reset: step;
+}
+.progress-step {
+  counter-increment: step;
+  font-size: 14px;
+  color: var(--ink-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+.progress-step::before { content: counter(step) ". "; }
+.progress-step.active {
+  color: var(--accent-dark);
+  border-color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.booking-step-title { font-weight: 600; margin: 24px 0 8px; }
+.booking-step-title:first-child { margin-top: 0; }
+.booking-step-hint, .booking-step-placeholder { color: var(--ink-soft); font-size: 14px; }
+
+.booking-step-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+
+/* Мастера */
+
+.master-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.master-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  background: var(--bg);
+}
+.master-card.picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.master-name { font-weight: 700; font-size: 18px; margin-bottom: 2px; }
+.master-title { color: var(--ink-soft); font-size: 14px; }
+.master-about { font-size: 14px; }
+.master-schedule { font-size: 14px; color: var(--accent-dark); }
+
+/* Даты и время */
+
+.date-picker { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
+.date-chip {
+  flex: 0 0 auto;
+  width: 64px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 10px 4px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.date-chip-day { font-size: 18px; font-weight: 700; color: var(--ink); }
+.date-chip:hover:not(:disabled) { border-color: var(--accent); }
+.date-chip.picked { border-color: var(--accent); background: var(--accent-tint); }
+.date-chip:disabled { opacity: .4; cursor: default; text-decoration: line-through; }
+
+.time-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.time-slot {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: inherit;
+  cursor: pointer;
+}
+.time-slot:hover:not(:disabled) { border-color: var(--accent); }
+.time-slot.picked { background: var(--accent); border-color: var(--accent); color: #fff; }
+.time-slot:disabled { opacity: .4; cursor: default; }
+
+/* Формы */
+
+.field { display: block; margin-bottom: 16px; max-width: 420px; }
+.field > span { display: block; font-size: 14px; margin-bottom: 6px; }
+.field em { color: var(--ink-soft); font-style: normal; }
+
+.field input, .field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  background: var(--surface);
+  color: var(--ink);
+}
+.field input:focus, .field textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+.choice-group { border: none; padding: 0; margin: 0 0 16px; }
+.choice-group legend { font-size: 14px; margin-bottom: 8px; padding: 0; }
+
+.choice-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  background: var(--surface);
+}
+.choice-chip input { margin-right: 6px; }
+.choice-chip:has(input:checked) { border-color: var(--accent); background: var(--accent-tint); }
+
+.checkbox-field { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+
+.form-error { color: #B3261E; font-size: 14px; }
+
+/* Ловушка для ботов: уводим за экран, а не display:none — скрытые
+   таким образом поля часть скриптов как раз пропускает. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Итог и успех */
+
+.booking-summary {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  background: var(--bg);
+  max-width: 520px;
+}
+.summary-total { font-weight: 700; font-size: 18px; margin-bottom: 0; }
+
+.booking-success {
+  border: 1px solid var(--accent);
+  background: var(--accent-tint);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 520px;
+}
+.booking-success-title { font-weight: 700; font-size: 20px; }
+.booking-success-note { color: var(--ink-soft); font-size: 14px; }
+
+/* ---------- Демо-блоки ---------- */
+
+.demo-cta { padding: clamp(32px, 5vw, 64px) 0; }
+.demo-cta .container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.demo-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  background: var(--surface);
+}
+.demo-card-admin { background: var(--accent-tint); border-color: var(--accent); }
+.demo-card-title { font-weight: 700; font-size: 18px; }
+.demo-card-text { color: var(--ink-soft); }
+.demo-card code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 14px;
+}
+
+/* ---------- Подвал ---------- */
+
+.site-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  margin-top: 24px;
+}
+.footer-inner { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; }
+.footer-title { font-weight: 700; margin: 0; }
+.footer-line { margin: 0 0 6px; color: var(--ink-soft); }
+.footer-link { text-decoration: none; }
+.footer-links { display: flex; gap: 12px; flex-wrap: wrap; }
+.footer-social {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* ---------- Модалка ---------- */
+
+.modal {
+  border: none;
+  border-radius: var(--radius);
+  padding: 28px;
+  width: min(480px, calc(100% - 32px));
+  color: var(--ink);
+  background: var(--surface);
+}
+.modal::backdrop { background: rgba(0, 0, 0, .45); }
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.modal-hint { color: var(--ink-soft); font-size: 14px; }
+
+.mybookings-results { margin-top: 20px; display: grid; gap: 12px; }
+.mybooking-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.mybooking-card.is-cancelled { opacity: .6; }
+.mybooking-service { font-weight: 600; margin-bottom: 2px; }
+.mybooking-meta { font-size: 14px; color: var(--ink-soft); }
+.mybooking-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mybooking-reschedule-panel { margin-top: 12px; }
+.mybooking-status { font-size: 14px; margin: 10px 0 0; }
+.mybooking-status.success { color: var(--accent-dark); }
+.mybooking-status.error { color: #B3261E; }
+
+@media (max-width: 600px) {
+  .site-header .container { min-height: 56px; }
+  .main-nav { gap: 12px; font-size: 14px; }
+  .booking-bar-summary { font-size: 14px; }
+}

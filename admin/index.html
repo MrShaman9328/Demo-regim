@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Админ-панель</title>
+<link rel="stylesheet" href="admin-demo.css">
+</head>
+<body>
+
+<!-- Плашка демо-режима, показывается только при DEMO_MODE=true -->
+<div class="demo-notice" id="demo-notice" hidden></div>
+
+<!-- ===== Вход ===== -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <h1>Админ-панель</h1>
+    <p class="login-sub" id="login-salon"></p>
+
+    <label class="a-field">
+      <span>Логин</span>
+      <input type="text" id="admin-login-input" autocomplete="username">
+    </label>
+    <label class="a-field">
+      <span>Пароль</span>
+      <input type="password" id="admin-password-input" autocomplete="current-password">
+    </label>
+
+    <p class="a-error" id="login-error" hidden></p>
+    <button type="button" class="a-btn a-btn-primary a-btn-block" id="login-btn">Войти</button>
+
+    <p class="login-demo-hint" id="login-demo-hint" hidden></p>
+  </div>
+</div>
+
+<!-- ===== Панель ===== -->
+<div class="admin-app" id="admin-app" hidden>
+
+  <header class="admin-header">
+    <span class="admin-title" id="admin-title">Админ-панель</span>
+    <button type="button" class="a-btn a-btn-ghost" id="logout-btn">Выйти</button>
+  </header>
+
+  <nav class="admin-tabs" id="admin-tabs">
+    <button class="admin-tab-btn active" data-admin-tab="bookings">Записи<span class="a-badge" id="new-bookings-badge" hidden></span></button>
+    <button class="admin-tab-btn" data-admin-tab="schedule">Расписание</button>
+    <button class="admin-tab-btn" data-admin-tab="history">История</button>
+    <button class="admin-tab-btn" data-admin-tab="clients">Клиенты</button>
+    <button class="admin-tab-btn" data-admin-tab="analytics">Аналитика</button>
+  </nav>
+
+  <main class="admin-main">
+
+    <section class="admin-panel active" data-admin-panel="bookings">
+      <div class="a-panel-header">
+        <h2>Предстоящие записи</h2>
+        <button type="button" class="a-btn a-btn-ghost" id="refresh-bookings-btn">Обновить</button>
+      </div>
+      <div id="bookings-list" class="admin-list"><p class="a-hint">Загрузка…</p></div>
+    </section>
+
+    <section class="admin-panel" data-admin-panel="schedule">
+      <h2>Расписание работы</h2>
+      <p class="a-hint">Базовый график каждого мастера задан в настройках салона. Здесь задаются исключения на конкретные даты — сокращённый день, выходной, замена.</p>
+
+      <label class="a-field a-field-inline">
+        <span>Мастер</span>
+        <select id="schedule-master-select"></select>
+      </label>
+
+      <div class="schedule-grid" id="schedule-grid"><p class="a-hint">Загрузка…</p></div>
+    </section>
+
+    <section class="admin-panel" data-admin-panel="history">
+      <h2>История</h2>
+      <div id="history-list" class="admin-list"><p class="a-hint">Загрузка…</p></div>
+    </section>
+
+    <section class="admin-panel" data-admin-panel="clients">
+      <h2>Клиенты</h2>
+      <div id="clients-list" class="admin-list"><p class="a-hint">Загрузка…</p></div>
+    </section>
+
+    <section class="admin-panel" data-admin-panel="analytics">
+      <h2>Аналитика</h2>
+      <div class="analytics-cards" id="analytics-cards"></div>
+      <div class="analytics-tables" id="analytics-tables"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="admin-demo.js"></script>
+</body>
+</html>

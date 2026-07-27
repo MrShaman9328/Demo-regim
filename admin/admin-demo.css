@@ -1,0 +1,289 @@
+/* ============================================================
+   Стили админ-панели. Палитра — те же CSS-переменные из config.json,
+   что и на клиентской части; значения ниже запасные.
+   Шрифты системные, внешних CDN нет.
+   ============================================================ */
+
+:root {
+  --accent: #5C8A4A;
+  --accent-dark: #3F6633;
+  --accent-tint: #EDF3E8;
+  --ink: #26302A;
+  --ink-soft: #61706A;
+  --bg: #F4F5F1;
+  --surface: #FFFFFF;
+  --border: #E3E6DF;
+  --radius: 12px;
+  --danger: #B3261E;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+h1, h2, h3 { margin: 0 0 12px; line-height: 1.25; }
+h2 { font-size: 20px; }
+p { margin: 0 0 10px; }
+
+.demo-notice {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ---------- Кнопки и поля ---------- */
+
+.a-btn {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+}
+.a-btn-primary { background: var(--accent); color: #fff; }
+.a-btn-primary:hover { background: var(--accent-dark); }
+.a-btn-ghost { border-color: var(--border); color: var(--ink); background: var(--surface); }
+.a-btn-ghost:hover { border-color: var(--accent); color: var(--accent-dark); }
+.a-btn-danger { border-color: var(--border); color: var(--danger); background: var(--surface); }
+.a-btn-danger:hover { border-color: var(--danger); }
+.a-btn-block { display: block; width: 100%; }
+.a-btn-small { padding: 6px 14px; font-size: 13px; }
+
+.a-field { display: block; margin-bottom: 14px; }
+.a-field > span { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 5px; }
+.a-field input, .a-field select, .a-field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font: inherit;
+  background: var(--surface);
+  color: var(--ink);
+}
+.a-field-inline { max-width: 280px; }
+
+.a-error { color: var(--danger); font-size: 14px; }
+.a-hint { color: var(--ink-soft); font-size: 14px; }
+.a-status { font-size: 14px; color: var(--accent-dark); }
+
+/* ---------- Вход ---------- */
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  width: min(380px, 100%);
+}
+.login-sub { color: var(--ink-soft); font-size: 14px; }
+.login-demo-hint {
+  margin-top: 16px;
+  background: var(--accent-tint);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+/* ---------- Каркас панели ---------- */
+
+.admin-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.admin-title { font-weight: 700; }
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  overflow-x: auto;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.admin-tab-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.admin-tab-btn.active { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-dark); }
+
+.a-badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 0 7px;
+}
+
+.admin-main { padding: 20px; max-width: 1000px; margin: 0 auto; }
+
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+
+.a-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Списки ---------- */
+
+.admin-list { display: grid; gap: 12px; margin-top: 16px; }
+
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.admin-card.is-new { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.card-when { font-weight: 700; }
+.card-master { color: var(--accent-dark); font-size: 14px; }
+.card-service { margin: 6px 0 2px; }
+.card-client { font-size: 14px; }
+.card-note { font-size: 14px; color: var(--ink-soft); }
+
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 0; }
+.tag {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+}
+.tag-new { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-dark); }
+.tag-done { color: var(--accent-dark); }
+.tag-noshow { color: var(--danger); }
+
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+.card-move { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.card-move input { border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font: inherit; }
+
+/* ---------- Расписание ---------- */
+
+.schedule-grid { display: grid; gap: 10px; margin-top: 16px; }
+
+.schedule-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.schedule-day.is-override { border-color: var(--accent); }
+.schedule-day.is-closed .schedule-day-date { color: var(--ink-soft); }
+
+.schedule-day-date { font-weight: 600; min-width: 150px; }
+.schedule-day-source { font-size: 12px; color: var(--ink-soft); display: block; font-weight: 400; }
+
+.schedule-intervals { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.schedule-interval { display: flex; gap: 4px; align-items: center; }
+.schedule-intervals input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font: inherit;
+}
+.schedule-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Клиенты ---------- */
+
+.client-notes { width: 100%; margin-top: 8px; }
+.client-notes textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: inherit;
+  resize: vertical;
+}
+
+/* ---------- Аналитика ---------- */
+
+.analytics-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.analytics-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.analytics-value { font-size: 24px; font-weight: 700; }
+.analytics-label { font-size: 13px; color: var(--ink-soft); }
+
+.analytics-tables { display: grid; gap: 16px; }
+.analytics-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.analytics-table h3 { font-size: 16px; }
+.analytics-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.analytics-row:last-child { border-bottom: none; }
+
+@media (max-width: 600px) {
+  .admin-main { padding: 14px; }
+  .schedule-day { flex-direction: column; align-items: flex-start; }
+}
