@@ -399,15 +399,34 @@ function deleteBooking(booking) {
   }).catch(function () { alert('Не удалось удалить. Попробуйте ещё раз.'); });
 }
 
-function moveBooking(booking, date, start) {
+function moveBooking(booking, date, start, force) {
   if (!date || !start) return;
 
-  callAdmin('updateBookingTime', { bookingId: booking.id, date: date, start: start }).then(function (r) {
+  callAdmin('updateBookingTime', { bookingId: booking.id, date: date, start: start, force: force === true }).then(function (r) {
     if (!handleAuth(r)) return;
+
+    if (r.status === 409 && r.json && r.json.error === 'outside-hours') {
+      // Сервер не запрещает перенос вне графика, но требует подтверждения —
+      // чтобы запись не уехала в выходной по случайному клику.
+      var hours = (r.json.intervals || []).map(function (iv) { return iv.start + '–' + iv.end; }).join(', ');
+      var reason = r.json.dayOff
+        ? formatDateRu(date) + ' у мастера ' + escapeText(booking.masterName) + ' выходной.'
+        : 'Это время вне графика мастера ' + escapeText(booking.masterName) + ' (' + formatDateRu(date) + ' работает ' + hours + ').';
+      if (confirm(reason + '\n\nВсё равно перенести запись сюда?')) {
+        moveBooking(booking, date, start, true);
+      }
+      return;
+    }
+
     if (r.status === 409) { alert('В это время у мастера уже есть запись.'); return; }
     if (r.status !== 200) { alert('Не удалось перенести запись.'); return; }
     loadBookings();
   }).catch(function () { alert('Не удалось перенести запись.'); });
+}
+
+// В confirm() разметки нет — там нужен обычный текст, а не HTML-экранирование.
+function escapeText(s) {
+  return String(s == null ? '' : s);
 }
 
 // ============================================================
